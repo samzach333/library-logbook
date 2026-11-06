@@ -1,86 +1,88 @@
-# Library Log Book
+# Atul sir's Library
 
-A small shared log book for the office book collection: who took which book, when, when it is due,
-and when it came back.
+A small private library website for our team: see every book, take one (the date and time are recorded
+automatically, you choose your return date), return it, and see who has what and what is overdue.
 
-- **Website**: plain HTML/CSS/JavaScript (no build step, no libraries) – hosted free on GitHub Pages.
-- **Database**: a Google Sheet (tabs `Books`, `People`, `Loans`) – everyone's PC reads and writes the
-  same sheet, and your guide can open it like a normal spreadsheet.
-- **Access**: one shared office PIN. Without it the website shows nothing and saves nothing.
+- **Website**: plain HTML/CSS/JavaScript, hosted free on GitHub Pages.
+- **Database**: a Google Sheet (tabs `Books`, `People`, `Loans`) shared by every PC. The admin can also
+  open it like a normal spreadsheet.
+- **Two passwords**, both checked by Google, never stored in any file of this repository:
+  - **Member password**: everyone types it to open the site.
+  - **Admin password**: only the admin. Unlocks adding/editing/deleting books and people, the full history,
+    fixing records and WhatsApp reminders.
 
-## What it does
+## What members can do
+- Browse and search all books, filter by *On the shelf / Taken / Overdue* and by category.
+- **Take this book**: the taken-on date and time are filled in automatically; they must choose a
+  return date (or tap 1 week / 2 weeks / 1 month).
+- **Return it**: for their own books only. The return time is recorded automatically.
+- See **Borrowed** (who has what and until when) and **Activity**.
+- Overdue books show **"Not returned yet – overdue by N days"** in red, and the person who has one sees
+  a red reminder bar at the top.
 
-| Screen | What you do there |
-|---|---|
-| Dashboard | Counts (books / on the shelf / with people / overdue), list of books currently out (overdue in red) with a **Returned** button, recent activity |
-| Issue a book | Pick book + person + return date (default 14 days) + optional remarks |
-| Books | Add / edit / delete books, search, see who has each book, per-book history |
-| People | The team list (name, phone, group/role) and what each person has right now |
-| History | Every issue/return record, filters (not returned / overdue / returned), **Export to Excel (CSV)** |
-
-"You are" (top right) is the person using the PC right now – it is recorded as *given by* / *received by*.
-It is remembered per PC.
+## What the admin can do (Admin button → admin password)
+- Add / edit / delete books, and add / edit / remove team members (with phone for reminders).
+- Mark any book returned, change a return date, fix or delete wrong records.
+- Full history with search and **Export to Excel**.
+- **WhatsApp reminder** button on overdue books (opens WhatsApp with a polite message ready).
+- Admin mode ends when the browser is closed, or with **exit**.
 
 ---
 
-## 1. Try it right now (demo mode, no setup)
+## 1. Preview (no setup)
 
-Double-click `index.html`. With `apiUrl: ''` in `config.js` it runs in **demo mode**: sample data,
-saved only in that browser. Use **Clear demo data** to start empty.
+While `apiUrl` in `config.js` is empty the site runs in **preview mode**: sample data, saved only in that
+browser, and *any* password opens it. Fine for looking around, but not for real use.
 
-## 2. Connect the shared Google Sheet (one time, ~10 minutes)
+## 2. Connect the Google Sheet (one time, about 10 minutes)
 
-Do this with the Google account that should **own** the records (yours or your guide's).
+Do this with the Google account that should **own** the records.
 
-1. Open <https://sheets.google.com> → create a **Blank** spreadsheet → name it `Library Log Book`.
-2. In the sheet: **Extensions → Apps Script**.
-3. Delete everything in `Code.gs`, paste the full contents of `google-apps-script/Code.gs` from this
-   folder, and press **Save** (disk icon).
-4. Time zone check: click **Project Settings** (gear icon) → tick **Show "appsscript.json"** → open
-   `appsscript.json` in the editor and make sure it says `"timeZone": "Asia/Kolkata"` → Save.
-5. Go back to the Google Sheet tab and **reload** the page. A new menu **Library** appears.
-   - **Library → 1. Set up sheets**. Google asks for permission the first time:
-     choose your account → *"Google hasn't verified this app"* → **Advanced** → **Go to … (unsafe)** →
-     **Allow**. (Normal for a script you wrote yourself; it only touches this one sheet.)
-   - **Library → 2. Set / change PIN** → type an office PIN (at least 6 characters).
-6. Back in Apps Script: **Deploy → New deployment** → gear icon → **Web app**:
-   - *Execute as*: **Me**
-   - *Who has access*: **Anyone** (needed so office PCs can reach it without each person logging in to
-     Google – the PIN is what protects it)
-   - **Deploy** → copy the **Web app URL** (ends in `/exec`).
-7. Open `config.js` and paste it: `apiUrl: 'https://script.google.com/macros/s/…/exec',`
-8. Reload `index.html` → enter the PIN → done. Add the team on the **People** tab first (including
-   yourself), choose your name in "You are", then add the books.
+1. Open <https://sheets.google.com> → **Blank** spreadsheet → name it `Atul sir's Library`.
+2. **Extensions → Apps Script**. Delete everything in `Code.gs`, paste the whole of
+   `google-apps-script/Code.gs` from this repository, press **Save**.
+3. Time zone: **Project Settings** (gear) → tick **Show "appsscript.json"** → open it in the editor →
+   make sure it says `"timeZone": "Asia/Kolkata"` → Save.
+4. Go back to the Sheet tab and **reload** it. A **Library** menu appears.
+   - **Library → 1. Set up sheets**. The first time, Google asks for permission: choose your account →
+     *"Google hasn't verified this app"* → **Advanced** → **Go to … (unsafe)** → **Allow**.
+     (Normal for your own script. It only touches this sheet.)
+   - **Library → 2. Set member password**: the password the team will use.
+   - **Library → 3. Set admin password**: your own, different one.
+5. Apps Script: **Deploy → New deployment** → gear → **Web app**:
+   *Execute as* **Me**, *Who has access* **Anyone** → **Deploy** → copy the **Web app URL** (ends in `/exec`).
+   ("Anyone" lets office PCs reach it without a Google login. The passwords are what protect it.)
+6. On GitHub, open `config.js` → pencil (Edit) → paste the URL into `apiUrl: '…'` → **Commit changes**.
+7. After about a minute, open the site, press **Ctrl+Shift+R**, enter the member password.
+   Then **Admin** → admin password → **People** → add every team member (including yourself) →
+   **Books → + Add book**.
 
-**Changing `Code.gs` later**: Deploy → **Manage deployments** → pencil icon → Version: **New version**
-→ Deploy. The URL stays the same.
+**Changing `Code.gs` later**: Deploy → **Manage deployments** → pencil → Version **New version** → Deploy
+(the URL stays the same).
 
-## 3. Put the website online (GitHub Pages)
+**Changing a password**: use the Library menu in the Sheet again. Everyone then types the new one.
 
-1. Create a repository on GitHub (for example `library-logbook`) and upload these files:
-   `index.html`, `style.css`, `app.js`, `config.js`, `README.md`, `google-apps-script/Code.gs`.
-2. Repository **Settings → Pages** → *Source*: **Deploy from a branch** → Branch **main**, folder
-   **/ (root)** → Save.
-3. After a minute the site is at `https://<your-username>.github.io/library-logbook/` – share that
-   link and the PIN with the team.
+## 3. Updating the website on GitHub
 
-## Privacy – what is public and what is not
+Repository → **Add file → Upload files** → drag in the changed files (same names replace the old ones)
+→ **Commit changes**. The live site updates in about a minute (Ctrl+Shift+R to see it).
+**Don't overwrite `config.js` on GitHub** once your `apiUrl` is in it, unless your local copy has it too.
 
-- A GitHub Pages site and its repository are **public** on a free account. They contain only the
-  website code and the Apps Script URL – **no records and no PIN**.
-- The records live only in the Google Sheet. Share the sheet itself (Google "Share" button) only with
-  people who should edit it directly.
-- The PIN is stored in the script's properties, never in any file. Each PC remembers it until someone
-  presses **Lock**.
-- Anyone who knows both the link and the PIN can change the log, so give the PIN only to the team, and
-  change it (Library → Set / change PIN) if someone leaves.
+## Privacy
+
+- The GitHub repository and site are public on a free account. They contain only code and the Apps
+  Script URL: **no records, no passwords**. Never type a password into any file here.
+- The records live only in the Google Sheet. Use its Share button only for people who should edit it
+  directly.
+- Each PC remembers the member password until **Log out**. Admin mode is forgotten when the browser
+  closes.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `index.html` | Page layout and dialogs |
-| `style.css` | Look and feel (light/dark automatic, phone-friendly) |
-| `app.js` | All website logic; also contains the demo-mode backend |
-| `config.js` | **Your settings**: `apiUrl`, page title, default loan days |
-| `google-apps-script/Code.gs` | The Google Sheet backend (paste into Apps Script) |
+| `index.html` | Page layout, login screen, dialogs |
+| `style.css` | Design (light/dark automatic, phone-friendly) |
+| `app.js` | Website logic, plus the preview-mode backend |
+| `config.js` | Settings: `apiUrl`, title, subtitle, owner line |
+| `google-apps-script/Code.gs` | Google Sheet backend: passwords, roles, all saving |

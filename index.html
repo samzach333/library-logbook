@@ -3,154 +3,230 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Library Log Book</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='5' y='4' width='8' height='24' rx='1.5' fill='%232f6f5e'/%3E%3Crect x='14' y='7' width='6' height='21' rx='1.5' fill='%23c98b2b'/%3E%3Crect x='21' y='5' width='6' height='23' rx='1.5' transform='rotate(8 24 16)' fill='%237a4a7d'/%3E%3C/svg%3E">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Atul sir's Library</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23245a4b'/%3E%3Cpath d='M7 10c3-1.5 6-1.5 9 .5 3-2 6-2 9-.5v13c-3-1.5-6-1.5-9 .5-3-2-6-2-9-.5z' fill='none' stroke='%23f3e6c4' stroke-width='1.8' stroke-linejoin='round'/%3E%3Cpath d='M16 10.5v13' stroke='%23f3e6c4' stroke-width='1.8'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
-        <rect x="5" y="4" width="8" height="24" rx="1.5" class="sp1"/>
-        <rect x="14" y="7" width="6" height="21" rx="1.5" class="sp2"/>
-        <rect x="21" y="5" width="6" height="23" rx="1.5" transform="rotate(8 24 16)" class="sp3"/>
-      </svg>
-      <h1 id="app-title">Library Log Book</h1>
-    </div>
-    <div class="top-actions">
-      <span id="sync" class="pill" title="Connection status">…</span>
-      <label class="operator">
-        <span>You are</span>
-        <select id="operator"></select>
-      </label>
-      <button id="btn-refresh" class="btn ghost" title="Reload latest records">Refresh</button>
-      <button id="btn-lock" class="btn ghost" title="Forget the PIN on this PC" hidden>Lock</button>
-    </div>
-  </header>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 6c3-1.5 6-1.5 9 .5 3-2 6-2 9-.5v13c-3-1.5-6-1.5-9 .5-3-2-6-2-9-.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 6.5v13" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.5-3 8-7 9.5-4-1.5-7-5-7-9.5V6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
 
-  <div id="demo-banner" class="banner" hidden>
-    <strong>Demo mode</strong> – records are saved only in this browser on this PC.
-    Connect the Google Sheet (see README) to share them with everyone.
-    <button id="btn-demo-reset" class="link">Clear demo data</button>
+  <!-- ============ LOGIN GATE ============ -->
+  <section id="gate" class="gate" hidden>
+    <div class="gate-card">
+      <div class="crest"><svg><use href="#i-book"/></svg></div>
+      <h1 class="gate-title" data-title>Atul sir's Library</h1>
+      <p class="gate-sub" data-subtitle>A shared bookshelf for our team</p>
+      <form id="form-gate" class="gate-form" autocomplete="on">
+        <label for="gate-pin" class="sr-only">Library password</label>
+        <div class="pw">
+          <svg class="pw-icon"><use href="#i-lock"/></svg>
+          <input type="password" id="gate-pin" placeholder="Library password" autocomplete="current-password" required>
+          <button type="button" class="pw-toggle" data-toggle-pw="gate-pin">Show</button>
+        </div>
+        <p class="error" id="gate-error" role="alert"></p>
+        <button class="btn primary block lg" type="submit">Enter the library</button>
+      </form>
+      <p class="gate-note" id="gate-note"></p>
+      <div class="shelf" id="gate-shelf" aria-hidden="true"></div>
+      <p class="gate-owner" data-owner>Books kindly provided by Atul sir</p>
+    </div>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <div id="app" hidden>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark"><svg><use href="#i-book"/></svg></div>
+        <div>
+          <div class="brand-title" data-title>Atul sir's Library</div>
+          <div class="brand-sub" data-owner>Books kindly provided by Atul sir</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span id="sync" class="pill" title="Connection status"></span>
+        <button id="btn-me" class="me-chip" title="Change who is using this PC"></button>
+        <span class="admin-badge" data-admin><svg><use href="#i-shield"/></svg>Admin <button id="btn-admin-exit" class="link">exit</button></span>
+        <button id="btn-admin" class="btn ghost small" data-member>Admin</button>
+        <button id="btn-logout" class="btn ghost small">Log out</button>
+      </div>
+    </header>
+
+    <div id="demo-banner" class="banner demo" hidden>
+      <strong>Preview mode.</strong> Sample data, saved only in this browser, and passwords are not checked.
+      Connect the Google Sheet (README step 2) to make it real and shared.
+      <button id="btn-demo-reset" class="link">Reset preview</button>
+    </div>
+    <div id="my-alert" class="banner alert" hidden role="alert"></div>
+
+    <main>
+      <section class="stats" id="stats"></section>
+
+      <nav class="tabs" role="tablist">
+        <button class="tab" data-view="books" role="tab">Books</button>
+        <button class="tab" data-view="borrowed" role="tab">Borrowed <span class="count" id="count-borrowed"></span></button>
+        <button class="tab" data-view="activity" role="tab">Activity</button>
+        <button class="tab" data-view="people" role="tab" data-admin>People</button>
+        <button class="tab" data-view="history" role="tab" data-admin>History</button>
+      </nav>
+
+      <!-- BOOKS -->
+      <section id="view-books" class="view">
+        <div id="mine-wrap" hidden>
+          <h2 class="section-title">Your books</h2>
+          <div class="grid" id="mine"></div>
+        </div>
+        <div class="toolbar">
+          <div class="search">
+            <svg><use href="#i-search"/></svg>
+            <input type="search" id="q" placeholder="Search by title, author or number">
+          </div>
+          <div class="chips" id="filters">
+            <button class="chip active" data-filter="all">All</button>
+            <button class="chip" data-filter="avail">On the shelf</button>
+            <button class="chip" data-filter="out">Taken</button>
+            <button class="chip" data-filter="late">Overdue</button>
+          </div>
+          <select id="cat" aria-label="Category"></select>
+          <button class="btn primary" id="btn-add-book" data-admin>+ Add book</button>
+        </div>
+        <div class="grid" id="catalogue"></div>
+      </section>
+
+      <!-- BORROWED -->
+      <section id="view-borrowed" class="view" hidden>
+        <div class="panel">
+          <h2 class="section-title">Books with people right now</h2>
+          <div id="borrowed"></div>
+        </div>
+      </section>
+
+      <!-- ACTIVITY -->
+      <section id="view-activity" class="view" hidden>
+        <div class="panel">
+          <h2 class="section-title">Recent activity</h2>
+          <ol class="timeline" id="activity"></ol>
+        </div>
+      </section>
+
+      <!-- PEOPLE (admin) -->
+      <section id="view-people" class="view" hidden>
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="section-title">Team members</h2>
+            <button class="btn primary" id="btn-add-person">+ Add person</button>
+          </div>
+          <div id="people"></div>
+        </div>
+      </section>
+
+      <!-- HISTORY (admin) -->
+      <section id="view-history" class="view" hidden>
+        <div class="panel">
+          <div class="panel-head">
+            <h2 class="section-title">Full history</h2>
+            <div class="head-tools">
+              <div class="search small">
+                <svg><use href="#i-search"/></svg>
+                <input type="search" id="hq" placeholder="Search book or person">
+              </div>
+              <select id="hf" aria-label="Filter">
+                <option value="all">All records</option>
+                <option value="open">Not returned</option>
+                <option value="late">Overdue</option>
+                <option value="returned">Returned</option>
+              </select>
+              <button class="btn" id="btn-export">Export to Excel</button>
+            </div>
+          </div>
+          <div id="history"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot" id="foot"></footer>
   </div>
 
-  <nav class="tabs" role="tablist">
-    <button class="tab" data-view="dashboard" role="tab">Dashboard</button>
-    <button class="tab" data-view="issue" role="tab">Issue a book</button>
-    <button class="tab" data-view="books" role="tab">Books</button>
-    <button class="tab" data-view="people" role="tab">People</button>
-    <button class="tab" data-view="history" role="tab">History</button>
-  </nav>
+  <!-- ============ DIALOGS ============ -->
+  <dialog id="dlg-who" class="dlg">
+    <div class="form">
+      <h2>Who are you?</h2>
+      <p class="hint">Pick your name. This PC will remember it.</p>
+      <div class="who-grid" id="who-grid"></div>
+      <p class="hint" id="who-empty" hidden>No names yet. Ask the admin to add you.</p>
+      <div class="form-actions"><button type="button" class="btn ghost" data-close>Later</button></div>
+    </div>
+  </dialog>
 
-  <main>
-    <!-- DASHBOARD -->
-    <section id="view-dashboard" class="view">
-      <div class="stats" id="stats"></div>
-      <div class="card">
-        <div class="card-head">
-          <h2>Currently with people</h2>
-          <button class="btn primary" data-goto="issue">+ Issue a book</button>
-        </div>
-        <div id="out-list"></div>
+  <dialog id="dlg-take" class="dlg">
+    <form id="form-take" class="form" autocomplete="off">
+      <h2>Take a book</h2>
+      <div class="dlg-book" id="take-book"></div>
+      <div class="facts">
+        <div><span>Taken by</span><div id="take-who"></div></div>
+        <div><span>Taken on</span><div id="take-when"></div></div>
       </div>
-      <div class="card">
-        <h2>Recent activity</h2>
-        <ul id="activity" class="activity"></ul>
+      <label>When will you return it?
+        <input type="date" name="due_date" id="take-due" required>
+      </label>
+      <div class="quick" id="take-quick">
+        <button type="button" class="chip" data-days="7">1 week</button>
+        <button type="button" class="chip" data-days="14">2 weeks</button>
+        <button type="button" class="chip" data-days="30">1 month</button>
       </div>
-    </section>
-
-    <!-- ISSUE -->
-    <section id="view-issue" class="view" hidden>
-      <div class="card narrow">
-        <h2>Issue a book</h2>
-        <form id="form-issue" class="form" autocomplete="off">
-          <label>Book
-            <select name="book_id" id="issue-book" required></select>
-          </label>
-          <label>Given to
-            <select name="person_id" id="issue-person" required></select>
-          </label>
-          <label>Return by
-            <input type="date" name="due_date" id="issue-due" required>
-          </label>
-          <label>Remarks <span class="opt">(optional)</span>
-            <input type="text" name="remarks" maxlength="300" placeholder="e.g. for thesis chapter 3">
-          </label>
-          <p class="hint" id="issue-hint"></p>
-          <div class="form-actions">
-            <button type="submit" class="btn primary">Issue book</button>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <!-- BOOKS -->
-    <section id="view-books" class="view" hidden>
-      <div class="card">
-        <div class="card-head">
-          <h2>Books</h2>
-          <div class="head-tools">
-            <input type="search" id="books-search" placeholder="Search title, author, number…">
-            <button class="btn primary" id="btn-add-book">+ Add book</button>
-          </div>
-        </div>
-        <div id="books-list"></div>
-      </div>
-    </section>
-
-    <!-- PEOPLE -->
-    <section id="view-people" class="view" hidden>
-      <div class="card">
-        <div class="card-head">
-          <h2>People</h2>
-          <button class="btn primary" id="btn-add-person">+ Add person</button>
-        </div>
-        <div id="people-list"></div>
-      </div>
-    </section>
-
-    <!-- HISTORY -->
-    <section id="view-history" class="view" hidden>
-      <div class="card">
-        <div class="card-head">
-          <h2>History</h2>
-          <div class="head-tools">
-            <input type="search" id="hist-search" placeholder="Search book or person…">
-            <select id="hist-filter">
-              <option value="all">All records</option>
-              <option value="open">Not returned</option>
-              <option value="overdue">Overdue</option>
-              <option value="returned">Returned</option>
-            </select>
-            <button class="btn ghost" id="btn-export">Export to Excel (CSV)</button>
-          </div>
-        </div>
-        <div id="hist-list"></div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="foot" id="foot"></footer>
-
-  <!-- PIN dialog -->
-  <dialog id="dlg-pin" class="dlg">
-    <form method="dialog" id="form-pin" class="form">
-      <h2>Enter office PIN</h2>
-      <p class="hint">Ask the person who set up the log book. It is remembered on this PC until you press Lock.</p>
-      <input type="password" id="pin-input" required autocomplete="current-password" placeholder="PIN">
-      <p class="error" id="pin-error"></p>
+      <p class="hint" id="take-hint"></p>
+      <label>Note <span class="opt">(optional)</span>
+        <input type="text" name="remarks" maxlength="300" placeholder="e.g. for my thesis chapter 3">
+      </label>
       <div class="form-actions">
-        <button type="submit" class="btn primary">Open log book</button>
+        <button type="button" class="btn ghost" data-close>Cancel</button>
+        <button type="submit" class="btn primary">Take this book</button>
       </div>
     </form>
   </dialog>
 
-  <!-- Book dialog -->
+  <dialog id="dlg-return" class="dlg">
+    <form id="form-return" class="form" autocomplete="off">
+      <h2>Return a book</h2>
+      <div class="dlg-book" id="return-book"></div>
+      <div class="facts" id="return-facts"></div>
+      <label>Condition / note <span class="opt">(optional)</span>
+        <input type="text" name="remarks" maxlength="300" placeholder="e.g. good condition">
+      </label>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-close>Cancel</button>
+        <button type="submit" class="btn primary">Confirm return</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-admin" class="dlg narrow">
+    <form id="form-admin" class="form">
+      <h2>Admin</h2>
+      <p class="hint">Only the library admin can add, edit or delete. Admin mode ends when this browser is closed.</p>
+      <div class="pw">
+        <svg class="pw-icon"><use href="#i-shield"/></svg>
+        <input type="password" id="admin-pin" placeholder="Admin password" autocomplete="off" required>
+        <button type="button" class="pw-toggle" data-toggle-pw="admin-pin">Show</button>
+      </div>
+      <p class="error" id="admin-error" role="alert"></p>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-close>Cancel</button>
+        <button type="submit" class="btn primary">Unlock</button>
+      </div>
+    </form>
+  </dialog>
+
   <dialog id="dlg-book" class="dlg">
     <form id="form-book" class="form" autocomplete="off">
       <h2 id="book-dlg-title">Add book</h2>
-      <label>Book number <span class="opt">(optional – leave blank to auto-number)</span>
-        <input type="text" name="id" maxlength="40" placeholder="e.g. G-12">
+      <label>Book number <span class="opt">(optional – leave blank to number automatically)</span>
+        <input type="text" name="id" maxlength="40" placeholder="e.g. AS-12">
       </label>
       <label>Title
         <input type="text" name="title" maxlength="300" required>
@@ -177,7 +253,6 @@
     </form>
   </dialog>
 
-  <!-- Person dialog -->
   <dialog id="dlg-person" class="dlg">
     <form id="form-person" class="form" autocomplete="off">
       <h2 id="person-dlg-title">Add person</h2>
@@ -186,10 +261,10 @@
         <input type="text" name="name" maxlength="100" required>
       </label>
       <div class="row2">
-        <label>Phone <span class="opt">(optional)</span>
-          <input type="tel" name="phone" maxlength="30">
+        <label>WhatsApp / phone <span class="opt">(optional, for reminders)</span>
+          <input type="tel" name="phone" maxlength="30" placeholder="98xxxxxxxx">
         </label>
-        <label>Group / role <span class="opt">(optional)</span>
+        <label>Role <span class="opt">(optional)</span>
           <input type="text" name="dept" maxlength="100" placeholder="e.g. PhD scholar">
         </label>
       </div>
@@ -203,29 +278,34 @@
     </form>
   </dialog>
 
-  <!-- Return dialog -->
-  <dialog id="dlg-return" class="dlg">
-    <form id="form-return" class="form" autocomplete="off">
-      <h2>Return book</h2>
-      <p id="return-info" class="return-info"></p>
-      <label>Condition / remarks <span class="opt">(optional)</span>
-        <input type="text" name="remarks" maxlength="300" placeholder="e.g. good condition">
+  <dialog id="dlg-loan" class="dlg">
+    <form id="form-loan" class="form" autocomplete="off">
+      <h2>Edit record</h2>
+      <div class="dlg-book" id="loan-book"></div>
+      <label>Return by
+        <input type="date" name="due_date" required>
       </label>
-      <div class="form-actions">
-        <button type="button" class="btn ghost" data-close>Cancel</button>
-        <button type="submit" class="btn primary">Mark as returned</button>
+      <label>Note when taken <span class="opt">(optional)</span>
+        <input type="text" name="issue_remarks" maxlength="300">
+      </label>
+      <label id="loan-ret-wrap">Note when returned <span class="opt">(optional)</span>
+        <input type="text" name="return_remarks" maxlength="300">
+      </label>
+      <div class="form-actions spread">
+        <button type="button" class="btn danger" id="btn-del-loan">Delete record</button>
+        <span>
+          <button type="button" class="btn ghost" data-close>Cancel</button>
+          <button type="submit" class="btn primary">Save</button>
+        </span>
       </div>
     </form>
   </dialog>
 
-  <!-- Book history dialog -->
-  <dialog id="dlg-bookhist" class="dlg wide">
+  <dialog id="dlg-hist" class="dlg wide">
     <div class="form">
-      <h2 id="bookhist-title">History</h2>
-      <div id="bookhist-list"></div>
-      <div class="form-actions">
-        <button type="button" class="btn ghost" data-close>Close</button>
-      </div>
+      <h2 id="hist-title">History</h2>
+      <div id="hist-list"></div>
+      <div class="form-actions"><button type="button" class="btn ghost" data-close>Close</button></div>
     </div>
   </dialog>
 
