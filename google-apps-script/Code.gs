@@ -1,3 +1,4 @@
+/** @OnlyCurrentDoc */
 /**
  * Atul sir's Library - Google Apps Script backend
  * ===============================================
