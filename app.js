@@ -846,6 +846,8 @@
 
   /* ---------------- start ---------------- */
   function start() {
+    const boot = document.getElementById('boot');
+    if (boot) boot.remove();
     document.title = CFG.title;
     $$('[data-title]').forEach((el) => { el.textContent = CFG.title; });
     $$('[data-subtitle]').forEach((el) => { el.textContent = CFG.subtitle; });
